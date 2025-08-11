@@ -1,4 +1,5 @@
 # React + TypeScript + Vite
+# Pro Tip; Make sure your browser's location is fully enabled
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
