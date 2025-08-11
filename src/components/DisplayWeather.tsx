@@ -38,12 +38,39 @@ const DisplayWeather = () => {
 
     const [weatherData, setWeatherData] = React.useState<WeatherDataProps | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [searchCity, setSearchCity] = React.useState("");
 
     const fetchCurrentWeather = React.useCallback(async (lat: number, lon: number) => {
         const url = `${api_Endpoint}weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=imperial`
         const response = await axios.get(url);
         return response.data;
     }, [])
+
+    const fetchWeatherData = async (city: string) => {
+        try {
+            const url = `${api_Endpoint}weather?q=${city}&appid=${api_key}&units=imperial`;
+            const searchResponse = await axios.get(url);
+
+            const currentSearchResults: WeatherDataProps = searchResponse.data;
+            return { currentSearchResults };
+        } catch (error) {
+            console.error("No Data Found");
+            throw error;
+        }
+    };
+
+    const handleSearch = async () => {
+        if (searchCity.trim() === "") {
+            return;
+        }
+
+        try {
+            const { currentSearchResults } = await fetchWeatherData(searchCity);
+            setWeatherData(currentSearchResults);
+        } catch (error) {
+            console.error("No Results Found");
+        }
+    };
 
     const iconChanger = (weather: string) => {
         let iconElement: React.ReactNode;
@@ -101,9 +128,9 @@ const DisplayWeather = () => {
         <MainWrapper>
             <div className="container">
                 <div className="searchArea">
-                    <input type='text' placeholder='Enter a city' />
+                    <input type='text' placeholder='Enter a city' value={searchCity} onChange={(e) => setSearchCity(e.target.value)} />
                     <div className="searchCircle">
-                        <AiOutlineSearch className='searchIcon' />
+                        <AiOutlineSearch className='searchIcon' onClick={handleSearch} />
                     </div>
                 </div>
 
